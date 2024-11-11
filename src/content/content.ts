@@ -69,11 +69,40 @@
 //   }
 // };
 
-if (window.top === window.self) {
-  //向background发送消息
-  chrome.runtime.sendMessage({
-    info: localStorage?.token ?? 0,
-  });
+const requestUrl = () => {
+  switch (window.location.hostname) {
+    case "mj-enhance.luluhero.com": {
+      return { url: "https://mj-rmbg.luluhero.com:9443/" };
+    }
+  }
+};
+const domain = ["mj-enhance.luluhero.com"];
+const init = async () => {
+  const baseUrl = requestUrl() ?? { url: "" };
+  const data = await chrome.storage.sync.get(["token", "stamp"]);
+  if (data?.token && data?.stamp) {
+    if (localStorage.token && localStorage.stamp) {
+      chrome.storage.sync.set({
+        token: localStorage?.token,
+        stamp: localStorage?.stamp,
+      });
+    } else {
+      const res = await fetch(`${baseUrl?.url}user/getInfo?sid=${data.token}`, {
+        headers: { stamp: data.stamp },
+      });
+      if (res.status == 401) {
+        chrome.storage.sync.remove(["token", "stamp"]);
+      } else {
+        localStorage.token = data.token;
+        localStorage.stamp = data.stamp;
+      }
+    }
+  } else {
+    chrome.storage.sync.set({
+      token: localStorage?.token,
+      stamp: localStorage?.stamp,
+    });
+  }
   // 接收消息
   chrome.runtime.onMessage.addListener(function (
     request,
@@ -87,12 +116,22 @@ if (window.top === window.self) {
   });
   //接收弹窗信息
   chrome.runtime.onConnect.addListener((res) => {
-    console.log("contentjs中的 chrome.runtime.onConnect：", res);
-    if (res.name === "myConnect") {
+    if (res.name === "popup") {
       res.onMessage.addListener((mess) => {
-        console.log("contentjs中的 res.onMessage.addListener：", mess);
-        res.postMessage(localStorage);
+        switch (mess) {
+          case "getToken": {
+            res.postMessage(localStorage);
+            break;
+          }
+        }
       });
     }
   });
+};
+if (window.top === window.self) {
+  if (domain.includes(window.location.hostname)) {
+    setInterval(() => {
+      init();
+    }, 1000);
+  }
 }

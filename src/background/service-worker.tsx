@@ -1,5 +1,7 @@
 //扩展环境
 
+import config from "../env";
+
 //获取当前 tab ID
 // function getCurrentTabId() {
 //   return new Promise((resolve) => {
@@ -8,24 +10,19 @@
 //     });
 //   });
 // }
+console.log("lfsz", config);
 
-const receiveMessage = async (req, sender, sendResponse) => {
-  console.log("lfsz", req);
-  const popup = chrome.extension.getViews({ type: "popup" })[0];
-
-  console.log("lfsz up", popup);
-
-  //   const tabId = (await getCurrentTabId()) as number;
-  //   const data = await chrome.tabs.sendMessage(tabId, "444");
-  //   console.log("lfsz", data);
-
+interface ReceiveMessageTypes {
+  req: { type: string; info: Record<string, unknown> };
+  sender: chrome.runtime.MessageSender;
+  sendResponse: () => void;
+}
+const receiveMessage = async (props: ReceiveMessageTypes) => {
   return true;
 };
 //页面通信
 chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
-  console.log("lfsz", req);
-
-  receiveMessage(req, sender, sendResponse);
+  receiveMessage({ req, sender, sendResponse });
   return true;
 });
 
@@ -62,10 +59,74 @@ chrome.runtime.onInstalled.addListener(function () {
 });
 
 chrome.contextMenus.onClicked.addListener(function (info, tab) {
-  console.log("lfsz", info, tab);
-
   const selectItem = menuList.filter((item) => item.id === info.menuItemId)[0];
   if (selectItem) {
     // selectItem.onclick();
   }
 });
+export const noticeFn = (
+  id: string,
+  option: chrome.notifications.NotificationOptions
+) => {
+  chrome.notifications.create(
+    id, // id
+    {
+      type: "progress",
+
+      iconUrl: "../icons/icon.png",
+
+      appIconMaskUrl: "../icons/icon.png",
+
+      title: "通知主标题",
+      progress: 50,
+
+      message: "通知副标题",
+
+      contextMessage: "好开心呀，终于会使用谷歌扩展里面的API了！",
+
+      buttons: [
+        // { title: "按钮1的标题", iconUrl: "icon3.png" },
+        // { title: "按钮2的标题", iconUrl: "icon4.png" },
+      ],
+
+      //   items: [
+      //     { title: "消息1", message: "今天天气真好！" },
+      //     { title: "消息2", message: "明天天气估计也不错！" },
+      //   ],
+
+      eventTime: Date.now() + 2000,
+    }
+  );
+};
+// chrome.notifications.create(
+//   "123", // id
+//   {
+//     type: "list",
+
+//     iconUrl: "../icons/icon.png",
+
+//     appIconMaskUrl: "../icons/icon.png",
+
+//     title: "通知主标题",
+//     // progress: 50,
+
+//     message: "通知副标题",
+
+//     contextMessage: "好开心呀，终于会使用谷歌扩展里面的API了！",
+
+//     buttons: [
+//       // { title: "按钮1的标题", iconUrl: "icon3.png" },
+//       // { title: "按钮2的标题", iconUrl: "icon4.png" },
+//     ],
+
+//     items: [
+//       { title: "消息1", message: "今天天气真好！" },
+//       { title: "消息2", message: "明天天气估计也不错！" },
+//     ],
+
+//     eventTime: Date.now() + 2000,
+//   },
+//   (id) => {
+//     console.log("lfsz", id);
+//   }
+// );

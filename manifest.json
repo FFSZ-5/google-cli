@@ -25,7 +25,8 @@
     "alarms",
     "storage",
     "contextMenus",
-    "scripting"
+    "scripting",
+    "notifications"
   ],
   "host_permissions": [],
   "content_scripts": [

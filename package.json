@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "start": " vite --watch build --mode test",
+    "start": " vite --watch build --mode dev",
     "json": "node watch.mjs",
     "lint": "eslint .",
     "preview": "vite preview"

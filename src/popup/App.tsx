@@ -1,12 +1,12 @@
 //扩展环境
 import "./App.less";
 
-import TestPopup from "./components/TestPopup";
+import Popup from "./components/index";
 
 function App() {
   return (
     <div id='app'>
-      <TestPopup></TestPopup>
+      <Popup></Popup>
     </div>
   );
 }

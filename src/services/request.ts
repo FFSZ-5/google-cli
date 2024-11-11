@@ -5,13 +5,18 @@
  * @LastEditTime: 2022-04-24 10:34:57
  * @Description:
  */
+
 import axios from "axios";
 import config from "./config.ts";
+
 const Axios = axios.create(config);
 
 // POST 传参序列化
 Axios.interceptors.request.use(
   (config) => {
+    if (localStorage.stamp) {
+      config.headers.Stamp = localStorage.stamp;
+    }
     if (config.headers["Content-Type"] == "multipart/form-data") {
       return config;
     }

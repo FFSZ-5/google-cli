@@ -5,6 +5,7 @@
  * @LastEditTime: 2022-04-24 10:34:42
  * @Description:
  */
+
 import Axios from "./request";
 
 export class ApiService {
@@ -14,7 +15,7 @@ export class ApiService {
   }
 
   // 获取列表数据
-  get(id?: string | undefined, query?: unknown) {
+  get(id?: string | undefined | object, query?: unknown) {
     if (!query) {
       query = id;
       id = undefined;
