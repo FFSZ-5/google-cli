@@ -3,6 +3,8 @@
 //   let position = "";
 //   console.log("lfsz", target);
 
+import { urlToFile } from "../popup/utils/tool";
+
 //   if (window.getComputedStyle(target)?.position == "fixed") {
 //     position = "fixed";
 //   }
@@ -74,64 +76,113 @@ const requestUrl = () => {
     case "mj-enhance.luluhero.com": {
       return { url: "https://mj-rmbg.luluhero.com:9443/" };
     }
+    case "localhost": {
+      return { url: "https://localhost:8080/api/" };
+    }
+    case "rmbg-enhance.luluhero.com": {
+      return { url: "https://rmbg-server.luluhero.com/" };
+    }
+    case "avc.ai": {
+      return { url: "https://api.avc.ai/" };
+    }
+    // case "https://enhance.avclabs.com/": {
+    //   return { url: "https://api.avclabs.com/" };
+    // }
   }
 };
-const domain = ["mj-enhance.luluhero.com"];
-const init = async () => {
-  const baseUrl = requestUrl() ?? { url: "" };
-  const data = await chrome.storage.sync.get(["token", "stamp"]);
-  if (data?.token && data?.stamp) {
-    if (localStorage.token && localStorage.stamp) {
+const domain = [
+  "mj-enhance.luluhero.com",
+  "localhost",
+  "rmbg-enhance.luluhero.com",
+  "avc.ai",
+  //   "enhance.avclabs.com",
+];
+
+const initToken = async () => {
+  if (domain.includes(window.location.hostname)) {
+    const baseUrl = requestUrl() ?? { url: "" };
+    const data = await chrome.storage.sync.get(["token", "stamp"]);
+    if (data?.token && data?.stamp) {
+      if (localStorage.token && localStorage.stamp) {
+        chrome.storage.sync.set({
+          token: localStorage?.token,
+          stamp: localStorage?.stamp,
+        });
+      } else {
+        const res = await fetch(
+          `${baseUrl?.url}user/getInfo?sid=${data.token}`,
+          {
+            headers: { stamp: data.stamp },
+            credentials: "include",
+          }
+        );
+        if (res.status == 401) {
+          chrome.storage.sync.remove(["token", "stamp"]);
+        } else {
+          localStorage.token = data.token;
+          localStorage.stamp = data.stamp;
+          location.reload();
+        }
+      }
+    } else {
       chrome.storage.sync.set({
         token: localStorage?.token,
         stamp: localStorage?.stamp,
       });
-    } else {
-      const res = await fetch(`${baseUrl?.url}user/getInfo?sid=${data.token}`, {
-        headers: { stamp: data.stamp },
-      });
-      if (res.status == 401) {
-        chrome.storage.sync.remove(["token", "stamp"]);
-      } else {
-        localStorage.token = data.token;
-        localStorage.stamp = data.stamp;
-      }
     }
-  } else {
-    chrome.storage.sync.set({
-      token: localStorage?.token,
-      stamp: localStorage?.stamp,
-    });
   }
-  // 接收消息
-  chrome.runtime.onMessage.addListener(function (
-    request,
-    sender,
-    sendResponse
-  ) {
-    console.log(request, sender, sendResponse);
-    //@ts-expect-error 忽略此行的类型错误，因为暂时无法修改第三方库的类型定义
-    sendResponse(1234);
-    return true;
-  });
-  //接收弹窗信息
-  chrome.runtime.onConnect.addListener((res) => {
-    if (res.name === "popup") {
-      res.onMessage.addListener((mess) => {
-        switch (mess) {
-          case "getToken": {
-            res.postMessage(localStorage);
-            break;
-          }
-        }
-      });
-    }
-  });
 };
+//make image and video recognizable
+const imgOrVideoHandle = () => {
+  const observer = new MutationObserver(() => {
+    setStyle();
+  });
+  observer.observe(document, {
+    subtree: true,
+    childList: true,
+    characterData: true,
+  });
+  const setStyle = () => {
+    const imgList = document.querySelectorAll("img");
+    const videoList = document.querySelectorAll("video");
+    const fn = (val: HTMLElement) => {
+      const style = getComputedStyle(val);
+      if (style.pointerEvents == "none") {
+        val.style.pointerEvents = "all";
+        return;
+      }
+      if (val.parentElement) {
+        fn(val.parentElement);
+      }
+    };
+    imgList.forEach((item) => {
+      fn(item);
+    });
+    videoList.forEach((item) => {
+      fn(item);
+    });
+  };
+};
+const injectCustomJs = () => {
+  const jsPath = "js/inject.js";
+  const temp = document.createElement("script");
+  temp.setAttribute("type", "text/javascript");
+  temp.src = chrome.runtime.getURL(jsPath);
+  temp.onload = function () {
+    document.head.removeChild(temp);
+  };
+  document.head.appendChild(temp);
+};
+chrome.runtime.onMessage.addListener((message) => {
+  window.postMessage({ file: message?.test });
+});
 if (window.top === window.self) {
-  if (domain.includes(window.location.hostname)) {
-    setInterval(() => {
-      init();
-    }, 1000);
-  }
+  //插入js
+  injectCustomJs();
+  //处理图片样式
+  imgOrVideoHandle();
+  setInterval(() => {
+    //设置token
+    initToken();
+  }, 1000);
 }

@@ -1,0 +1,12 @@
+{
+  "Upscale": "1",
+  "RemoveBG": "2",
+  "RemoveOBJ": "3",
+  "Colorize": "4",
+  "ColorCalibrate": "5",
+  "Denoise": "6",
+  "Enhance": "7",
+  "title": "用avc.ai打开",
+  "username": "用户名",
+  "password": "密码"
+}

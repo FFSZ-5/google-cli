@@ -1,5 +1,5 @@
 import { ResponseType } from "axios";
-import config from "../env";
+import config from "../../env";
 
 const responseType: ResponseType | undefined = "json";
 

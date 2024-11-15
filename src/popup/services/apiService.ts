@@ -29,9 +29,9 @@ export class ApiService {
 
   // 新增数据
   post(
-    id: string | undefined,
-    data: string | object | undefined,
-    headers: object
+    id?: string | undefined | object,
+    data?: string | object | undefined,
+    headers?: object
   ) {
     if (!data) {
       data = id;

@@ -1,17 +1,17 @@
-import { create } from "zustand";
+import {
+  applyMiddleware,
+  combineReducers,
+  legacy_createStore as createStore,
+} from "redux";
 
-interface ICountStoreState {
-  count: number;
-  increment: (countNum: number) => void;
-  decrement: (countNum: number) => void;
-}
+import reducer from "./action";
+import { thunk } from "redux-thunk";
 
-const useStore = create<ICountStoreState>((set) => ({
-  count: 0,
-  increment: (countNum: number) =>
-    set((state) => ({ count: state.count + countNum })),
-  decrement: (countNum: number) =>
-    set((state) => ({ count: state.count - countNum })),
-}));
+const store = createStore(
+  combineReducers({
+    reducer,
+  }),
+  applyMiddleware(thunk)
+);
 
-export default useStore;
+export default store;

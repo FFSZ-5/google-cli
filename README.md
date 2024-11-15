@@ -1,46 +1,36 @@
-# 架构参考文档
+# Architecture reference document
 https://blog.csdn.net/guoqiankunmiss/article/details/135967318
 
-# 命令
+# command
 ```js
-//调试popup和contentPage
+//debugging popup and contentPage
 npm run start
 ```
-P
-# manifest.json文件
+# manifest.json
 https://www.cnblogs.com/xinxihua/articles/18164765
 ```json
 {
-    // 扩展名称
+    // extension name
     "name": "MyExtension",
-  
-    // 版本。由1到4个整数构成。多个整数间用"."隔开
-    "version": "1.0",
-  
-    // manifest文件版本号。Chrome18开始必须为2
+    "version": "3.0",
     "manifest_version": 2,
-  
-    // 描述。132个字符以内
-    "description": ",
-  
-    // 扩展图标。推荐大小16，48，128
+    //description within 132 character
+    "description": "",
+    //extension icon recommend size:16，48，128
     "icons": {
       "16": "image/icon-16.png",
       "48": "image/icon-48.png",
       "128": "image/icon-128.png"
     },
-  
-    // 语言
+    // language
     "default_locale": "en",
-  
-    // 地址栏右侧图标管理，含图标及弹出页面的设置等
-    // 建议至少保留一个设置，不然扩展图标是暗的
+    // icon management on the right side of address bar，includes icon and popup page setting
+    // it is recommend to keep at lease one setting,otherwise the extension icon will be dark
     "browser_action": {
       "default_icon": "image/icon-128.png",
       "default_title": "My Message",
       "default_popup": "html/browser.html"
     },
-  
     // 地址栏最后附加图标。含图标及行为等
     "page_action": {
       "default_icon": "image/icon-48.png",

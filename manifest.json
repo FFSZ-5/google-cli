@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "My React Chrome Ext",
+  "name": "avc.ai",
   "version": "0.0.1",
-  "description": "Chrome 插件",
+  "description": "avc.ai 插件",
   "icons": {
     "16": "icons/icon.png",
     "19": "icons/icon.png",
@@ -11,7 +11,7 @@
     "128": "icons/icon.png"
   },
   "action": {
-    "default_title": "React Chrome Ext",
+    "default_title": "Open with avc.ai",
     "default_icon": "icons/icon.png",
     "default_popup": "popup/index.html"
   },
@@ -41,7 +41,7 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["popup/*", "contentPage/*", "assets/*", "js/*"],
+      "resources": ["popup/*", "contentPage/*", "assets/*", "js/inject.js"],
       "matches": ["<all_urls>"],
       "use_dynamic_url": true
     }
